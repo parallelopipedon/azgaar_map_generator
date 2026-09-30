@@ -1,0 +1,190 @@
+[gd_scene load_steps=2 format=3 uid="uid://d1h8x4a5tq3y2"]
+
+[ext_resource type="Script" path="res://addons/map_generator/ui/map_generator_dock.gd" id="1_dock"]
+
+[node name="MapGeneratorDock" type="Control"]
+custom_minimum_size = Vector2(300, 500)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_dock")
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_scroll_mode = 0
+
+[node name="VBox" type="VBoxContainer" parent="Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="Header" type="Label" parent="Scroll/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "Fantasy Map Generator"
+horizontal_alignment = 1
+
+[node name="Params" type="VBoxContainer" parent="Scroll/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SeedRow" type="HBoxContainer" parent="Scroll/VBox/Params"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Scroll/VBox/Params/SeedRow"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "Seed:"
+
+[node name="SeedSpin" type="SpinBox" parent="Scroll/VBox/Params/SeedRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 9999999.0
+value = 1337.0
+
+[node name="RandBtn" type="Button" parent="Scroll/VBox/Params/SeedRow"]
+layout_mode = 2
+tooltip_text = "Randomize Seed"
+text = "🎲"
+
+[node name="DimRow" type="HBoxContainer" parent="Scroll/VBox/Params"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Scroll/VBox/Params/DimRow"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "Size:"
+
+[node name="WidthSpin" type="SpinBox" parent="Scroll/VBox/Params/DimRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 300.0
+max_value = 4000.0
+value = 1200.0
+
+[node name="x" type="Label" parent="Scroll/VBox/Params/DimRow"]
+layout_mode = 2
+text = "x"
+
+[node name="HeightSpin" type="SpinBox" parent="Scroll/VBox/Params/DimRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 200.0
+max_value = 3000.0
+value = 800.0
+
+[node name="CellsLabel" type="Label" parent="Scroll/VBox/Params"]
+layout_mode = 2
+text = "Voronoi Cells:"
+
+[node name="CellsSpin" type="SpinBox" parent="Scroll/VBox/Params"]
+layout_mode = 2
+min_value = 100.0
+max_value = 4000.0
+value = 800.0
+
+[node name="CountriesLabel" type="Label" parent="Scroll/VBox/Params"]
+layout_mode = 2
+text = "Countries / States:"
+
+[node name="CountriesSpin" type="SpinBox" parent="Scroll/VBox/Params"]
+layout_mode = 2
+min_value = 1.0
+max_value = 30.0
+value = 7.0
+
+[node name="SeaLabel" type="Label" parent="Scroll/VBox/Params"]
+layout_mode = 2
+text = "Sea Level:"
+
+[node name="SeaRow" type="HBoxContainer" parent="Scroll/VBox/Params"]
+layout_mode = 2
+
+[node name="SeaSlider" type="HSlider" parent="Scroll/VBox/Params/SeaRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.15
+max_value = 0.75
+step = 0.01
+value = 0.42
+
+[node name="SeaVal" type="Label" parent="Scroll/VBox/Params/SeaRow"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = "0.42"
+horizontal_alignment = 2
+
+[node name="IslandChk" type="CheckBox" parent="Scroll/VBox/Params"]
+layout_mode = 2
+button_pressed = true
+text = "Island Falloff Mask"
+
+[node name="CoordLabel" type="Label" parent="Scroll/VBox/Params"]
+layout_mode = 2
+text = "Coordinates Mode:"
+
+[node name="CoordOpt" type="OptionButton" parent="Scroll/VBox/Params"]
+layout_mode = 2
+
+[node name="HSeparator1" type="HSeparator" parent="Scroll/VBox"]
+layout_mode = 2
+
+[node name="LayersLabel" type="Label" parent="Scroll/VBox"]
+layout_mode = 2
+text = "Export Layers:"
+
+[node name="Layers" type="VBoxContainer" parent="Scroll/VBox"]
+layout_mode = 2
+
+[node name="CountryChk" type="CheckBox" parent="Scroll/VBox/Layers"]
+layout_mode = 2
+button_pressed = true
+text = "Countries (Polygons & Stats)"
+
+[node name="LandChk" type="CheckBox" parent="Scroll/VBox/Layers"]
+layout_mode = 2
+button_pressed = true
+text = "Landmasses (Continents)"
+
+[node name="CapitalChk" type="CheckBox" parent="Scroll/VBox/Layers"]
+layout_mode = 2
+button_pressed = true
+text = "Capitals (Points)"
+
+[node name="HSeparator2" type="HSeparator" parent="Scroll/VBox"]
+layout_mode = 2
+
+[node name="Export" type="VBoxContainer" parent="Scroll/VBox"]
+layout_mode = 2
+
+[node name="PathLabel" type="Label" parent="Scroll/VBox/Export"]
+layout_mode = 2
+text = "Output GeoJSON:"
+
+[node name="PathEdit" type="LineEdit" parent="Scroll/VBox/Export"]
+layout_mode = 2
+text = "res://output/world_map.geojson"
+
+[node name="GenerateBtn" type="Button" parent="Scroll/VBox"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+text = "🎲 Generate GeoJSON"
+
+[node name="StatusLbl" type="Label" parent="Scroll/VBox"]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+text = "Ready to generate."
+autowrap_mode = 3
+
+[node name="PreviewPanel" type="Control" parent="Scroll/VBox"]
+custom_minimum_size = Vector2(260, 180)
+layout_mode = 2

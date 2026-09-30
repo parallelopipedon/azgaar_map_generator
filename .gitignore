@@ -1,0 +1,20 @@
+# Godot 4+ ignores
+.godot/
+*.translation
+.import/
+export_presets.cfg
+
+# Mono / .NET / C# ignores
+.mono/
+bin/
+obj/
+*.csproj
+*.sln
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp

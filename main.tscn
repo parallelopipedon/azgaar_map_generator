@@ -1,0 +1,268 @@
+[gd_scene load_steps=2 format=3 uid="uid://c7m5y3k2v6a1r"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_main"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="HSplit" type="HSplitContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+split_offset = 360
+
+[node name="LeftPanel" type="PanelContainer" parent="HSplit"]
+custom_minimum_size = Vector2(340, 0)
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="HSplit/LeftPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="Scroll" type="ScrollContainer" parent="HSplit/LeftPanel/Margin"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="VBox" type="VBoxContainer" parent="HSplit/LeftPanel/Margin/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Fantasy Map Generator"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+text = "Procedural GeoJSON Generator Plugin & Tool"
+horizontal_alignment = 1
+
+[node name="HSeparator1" type="HSeparator" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+layout_mode = 2
+
+[node name="SeedRow" type="HBoxContainer" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HSplit/LeftPanel/Margin/Scroll/VBox/SeedRow"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Seed:"
+
+[node name="SeedSpin" type="SpinBox" parent="HSplit/LeftPanel/Margin/Scroll/VBox/SeedRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 9999999.0
+value = 1337.0
+
+[node name="RandBtn" type="Button" parent="HSplit/LeftPanel/Margin/Scroll/VBox/SeedRow"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Randomize Seed"
+text = "🎲"
+
+[node name="DimRow" type="HBoxContainer" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HSplit/LeftPanel/Margin/Scroll/VBox/DimRow"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Map Size:"
+
+[node name="WidthSpin" type="SpinBox" parent="HSplit/LeftPanel/Margin/Scroll/VBox/DimRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 300.0
+max_value = 4000.0
+value = 1200.0
+
+[node name="x" type="Label" parent="HSplit/LeftPanel/Margin/Scroll/VBox/DimRow"]
+layout_mode = 2
+text = "x"
+
+[node name="HeightSpin" type="SpinBox" parent="HSplit/LeftPanel/Margin/Scroll/VBox/DimRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 200.0
+max_value = 3000.0
+value = 800.0
+
+[node name="CellsRow" type="HBoxContainer" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HSplit/LeftPanel/Margin/Scroll/VBox/CellsRow"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Voronoi:"
+
+[node name="CellsSpin" type="SpinBox" parent="HSplit/LeftPanel/Margin/Scroll/VBox/CellsRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 100.0
+max_value = 4000.0
+value = 800.0
+
+[node name="CountriesRow" type="HBoxContainer" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HSplit/LeftPanel/Margin/Scroll/VBox/CountriesRow"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Countries:"
+
+[node name="CountriesSpin" type="SpinBox" parent="HSplit/LeftPanel/Margin/Scroll/VBox/CountriesRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 30.0
+value = 7.0
+
+[node name="SeaLabel" type="Label" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+layout_mode = 2
+text = "Sea Level:"
+
+[node name="SeaRow" type="HBoxContainer" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+layout_mode = 2
+
+[node name="SeaSlider" type="HSlider" parent="HSplit/LeftPanel/Margin/Scroll/VBox/SeaRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.15
+max_value = 0.75
+step = 0.01
+value = 0.42
+
+[node name="SeaVal" type="Label" parent="HSplit/LeftPanel/Margin/Scroll/VBox/SeaRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = "0.42"
+horizontal_alignment = 2
+
+[node name="IslandChk" type="CheckBox" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "Island Falloff Mask"
+
+[node name="CoordLabel" type="Label" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+layout_mode = 2
+text = "Coordinates Mode:"
+
+[node name="CoordOpt" type="OptionButton" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HSeparator2" type="HSeparator" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+layout_mode = 2
+
+[node name="LayersLabel" type="Label" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+layout_mode = 2
+text = "Export Layers:"
+
+[node name="CountryChk" type="CheckBox" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "Countries (Polygons & Stats)"
+
+[node name="LandChk" type="CheckBox" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "Landmasses (Continents)"
+
+[node name="CapitalChk" type="CheckBox" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "Capitals (Points)"
+
+[node name="HSeparator3" type="HSeparator" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+layout_mode = 2
+
+[node name="PathLabel" type="Label" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+layout_mode = 2
+text = "Output GeoJSON:"
+
+[node name="PathEdit" type="LineEdit" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "res://output/world_map.geojson"
+
+[node name="GenerateBtn" type="Button" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "🎲 Generate GeoJSON"
+
+[node name="StatusLbl" type="Label" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+text = "Ready to generate."
+autowrap_mode = 3
+
+[node name="HSeparator4" type="HSeparator" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+layout_mode = 2
+
+[node name="NationsTitle" type="Label" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+layout_mode = 2
+text = "Nations / States:"
+
+[node name="CountryList" type="ItemList" parent="HSplit/LeftPanel/Margin/Scroll/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 160)
+layout_mode = 2
+
+[node name="RightPanel" type="PanelContainer" parent="HSplit"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MapCanvas" type="Control" parent="HSplit/RightPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="InfoPanel" type="PanelContainer" parent="HSplit/RightPanel"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(260, 240)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+
+[node name="Margin" type="MarginContainer" parent="HSplit/RightPanel/InfoPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="InfoLabel" type="RichTextLabel" parent="HSplit/RightPanel/InfoPanel/Margin"]
+unique_name_in_owner = true
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
