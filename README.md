@@ -1,4 +1,4 @@
-# Procedural Map Generator 
+# Azgaar Map Generator 
 
 A lightweight, zero-dependency Godot 4 plugin (compatible with **Godot 4.2+**) and standalone procedural map generator that outputs standard **GeoJSON** (`RFC 7946`). Inspired by [Azgaar's Fantasy Map Generator](https://github.com/Azgaar/Fantasy-Map-Generator), it implements the core procedural generation pipeline directly in Godot using native C++ geometry algorithms.
 
