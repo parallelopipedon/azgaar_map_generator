@@ -1,9 +1,6 @@
 @tool
 extends Control
 
-const MapPipeline = preload("../generator/map_pipeline.gd")
-const GeoJsonSerializer = preload("../generator/geojson_serializer.gd")
-
 @onready var seed_spin: SpinBox = $Scroll/VBox/Params/SeedRow/SeedSpin
 @onready var rand_btn: Button = $Scroll/VBox/Params/SeedRow/RandBtn
 @onready var width_spin: SpinBox = $Scroll/VBox/Params/DimRow/WidthSpin
@@ -126,8 +123,22 @@ func _on_preview_draw() -> void:
 					var closed_pts: PackedVector2Array = scaled.duplicate()
 					closed_pts.append(scaled[0])
 					preview_panel.draw_polyline(closed_pts, border_col, 1.5)
+
+	# Draw Inland Lakes / Seas in matching ocean color
+	var lake_polys: Array = current_result.get("lake_polygons", [])
+	for lake_p in lake_polys:
+		if lake_p is PackedVector2Array and lake_p.size() >= 3:
+			var scaled: PackedVector2Array = PackedVector2Array()
+			for pt in lake_p:
+				scaled.append(Vector2(pt.x * scale_factor + offset_x, pt.y * scale_factor + offset_y))
+			preview_panel.draw_colored_polygon(scaled, Color("#1b2838"))
+			if scaled.size() >= 3:
+				var closed_pts: PackedVector2Array = scaled.duplicate()
+				closed_pts.append(scaled[0])
+				preview_panel.draw_polyline(closed_pts, Color(1, 1, 1, 0.25), 1.0)
 					
-		# Draw Capital marker
+	# Draw Capitals
+	for country in countries:
 		var cap_pt: Vector2 = country.get("capital_pos", Vector2.ZERO)
 		var cap_screen: Vector2 = Vector2(cap_pt.x * scale_factor + offset_x, cap_pt.y * scale_factor + offset_y)
 		preview_panel.draw_circle(cap_screen, 4.0, Color.WHITE)

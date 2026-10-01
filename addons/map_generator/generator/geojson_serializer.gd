@@ -55,7 +55,9 @@ static func serialize(
 	mode: CoordMode = CoordMode.GEO,
 	include_countries: bool = true,
 	include_land: bool = true,
-	include_capitals: bool = true
+	include_capitals: bool = true,
+	lake_polygons: Array[PackedVector2Array] = [],
+	include_lakes: bool = true
 ) -> Dictionary:
 	var features: Array = []
 	var countries: Array = countries_data.get("countries", [])
@@ -160,6 +162,29 @@ static func serialize(
 					"country_id": country.get("id"),
 					"country_name": country.get("name"),
 					"type": "capital"
+				}
+			})
+			
+	# 4. Inland Lake / Sea features
+	if include_lakes and not lake_polygons.is_empty():
+		var lake_multi_coords: Array = []
+		for poly in lake_polygons:
+			if poly.size() >= 3:
+				var ring: Array = polygon_to_ring(poly, width, height, mode)
+				if ring.size() >= 4:
+					lake_multi_coords.append([ring])
+					
+		if not lake_multi_coords.is_empty():
+			features.append({
+				"type": "Feature",
+				"id": "inland_seas",
+				"geometry": {
+					"type": "MultiPolygon" if lake_multi_coords.size() > 1 else "Polygon",
+					"coordinates": lake_multi_coords if lake_multi_coords.size() > 1 else lake_multi_coords[0]
+				},
+				"properties": {
+					"name": "Inland Sea",
+					"type": "lake"
 				}
 			})
 			

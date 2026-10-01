@@ -1,8 +1,5 @@
 extends Control
 
-const MapPipeline = preload("res://addons/map_generator/generator/map_pipeline.gd")
-const GeoJsonSerializer = preload("res://addons/map_generator/generator/geojson_serializer.gd")
-
 @onready var seed_spin: SpinBox = %SeedSpin
 @onready var rand_btn: Button = %RandBtn
 @onready var width_spin: SpinBox = %WidthSpin
@@ -165,9 +162,15 @@ func _check_hover(canvas_pos: Vector2) -> void:
 					found_id = c.get("id", -1)
 					found_country = c
 					break
-		if found_id != -1:
-			break
-			
+	if found_id != -1:
+		var lake_polys: Array = current_result.get("lake_polygons", [])
+		for lake in lake_polys:
+			if lake is PackedVector2Array and lake.size() >= 3:
+				if Geometry2D.is_point_in_polygon(map_pos, lake):
+					found_id = -1
+					found_country = {}
+					break
+					
 	if found_id != hovered_country_id:
 		hovered_country_id = found_id
 		if found_id != -1:
@@ -250,8 +253,22 @@ func _on_map_draw() -> void:
 					var closed_pts: PackedVector2Array = scaled.duplicate()
 					closed_pts.append(scaled[0])
 					map_canvas.draw_polyline(closed_pts, border_col, border_w)
+
+	# Draw Inland Lakes / Seas (rendered in the same ocean blue as outer seas)
+	var lake_polys: Array = current_result.get("lake_polygons", [])
+	for lake_p in lake_polys:
+		if lake_p is PackedVector2Array and lake_p.size() >= 3:
+			var scaled: PackedVector2Array = PackedVector2Array()
+			for pt in lake_p:
+				scaled.append(pt * zoom_level + pan_offset)
+			map_canvas.draw_colored_polygon(scaled, Color("#16293d"))
+			if scaled.size() >= 3:
+				var closed_pts: PackedVector2Array = scaled.duplicate()
+				closed_pts.append(scaled[0])
+				map_canvas.draw_polyline(closed_pts, Color(1, 1, 1, 0.25), 1.0)
 					
-		# Draw Capital marker and label
+	# Draw Capitals and Labels
+	for country in countries:
 		var cap_pt: Vector2 = country.get("capital_pos", Vector2.ZERO)
 		var cap_screen: Vector2 = cap_pt * zoom_level + pan_offset
 		map_canvas.draw_circle(cap_screen, 5.0, Color.WHITE)

@@ -2,9 +2,6 @@
 class_name MapGenerator
 extends RefCounted
 
-const MapPipeline = preload("generator/map_pipeline.gd")
-const GeoJsonSerializer = preload("generator/geojson_serializer.gd")
-
 ## Coordinate mode enumeration for GeoJSON output
 enum CoordMode {
 	PIXEL = GeoJsonSerializer.CoordMode.PIXEL,
@@ -27,6 +24,7 @@ static func get_default_params() -> Dictionary:
 		"include_countries": true,
 		"include_land": true,
 		"include_capitals": true,
+		"include_lakes": true,
 		"custom_names": [],
 		"output_path": ""
 	}
@@ -37,6 +35,7 @@ static func get_default_params() -> Dictionary:
 ##   - "total_time_ms": int
 ##   - "countries": Array[Dictionary] (name, color, capital_name, capital_pos, area, cells_count, polygons, stats, neighbors)
 ##   - "land_polygons": Array[PackedVector2Array]
+##   - "lake_polygons": Array[PackedVector2Array]
 ##   - "geojson": Dictionary (RFC 7946 FeatureCollection)
 ##   - "voronoi": Dictionary (raw Voronoi cell graph)
 ##   - "heightmap": Dictionary (raw heightmap values & classification)
@@ -61,12 +60,13 @@ static func generate_geojson_file(output_path: String, params: Dictionary = {}) 
 		return res.get("error", FAILED)
 	return OK
 
-## Generates countries-only GeoJSON (omits background landmass and separate point features).
+## Generates countries-only GeoJSON (omits background landmass, inland seas, and separate point features).
 ## Ideal for game territory renderers like The Chancellor's GeoMap.
 static func generate_countries_only_file(output_path: String, params: Dictionary = {}) -> Error:
 	var final_params: Dictionary = params.duplicate()
 	final_params["include_countries"] = true
 	final_params["include_land"] = false
 	final_params["include_capitals"] = false
+	final_params["include_lakes"] = false
 	return generate_geojson_file(output_path, final_params)
 

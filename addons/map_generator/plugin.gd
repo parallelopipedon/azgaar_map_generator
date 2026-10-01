@@ -1,7 +1,7 @@
 @tool
 extends EditorPlugin
 
-var dock_scene: PackedScene = preload("res://addons/map_generator/ui/map_generator_dock.tscn")
+var dock_scene: PackedScene = preload("ui/map_generator_dock.tscn")
 var dock_instance: Control
 
 func _enter_tree() -> void:
@@ -11,4 +11,4 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	if dock_instance:
 		remove_control_from_docks(dock_instance)
-		dock_instance.free()
+		dock_instance.queue_free()

@@ -2,11 +2,6 @@
 class_name MapPipeline
 extends RefCounted
 
-const VoronoiBuilder = preload("voronoi_builder.gd")
-const HeightmapBuilder = preload("heightmap_builder.gd")
-const CountryBuilder = preload("country_builder.gd")
-const GeoJsonSerializer = preload("geojson_serializer.gd")
-
 ## Master generator pipeline connecting Voronoi, Heightmap, Countries, and GeoJSON
 static func run(params: Dictionary) -> Dictionary:
 	var t_start: int = Time.get_ticks_msec()
@@ -23,6 +18,7 @@ static func run(params: Dictionary) -> Dictionary:
 	var include_countries: bool = params.get("include_countries", true)
 	var include_land: bool = params.get("include_land", true)
 	var include_capitals: bool = params.get("include_capitals", true)
+	var include_lakes: bool = params.get("include_lakes", include_land)
 	var custom_names: Array = params.get("custom_names", [])
 	var output_path: String = params.get("output_path", "res://output/world_map.geojson")
 	
@@ -65,6 +61,9 @@ static func run(params: Dictionary) -> Dictionary:
 		land_merged = CountryBuilder.union_polygons(land_polys_to_merge)
 	var t_land_merge: int = Time.get_ticks_msec() - t3
 	
+	# Step 4b: Extract inland lakes / seas
+	var lake_merged: Array[PackedVector2Array] = _extract_inland_lakes(voronoi, heightmap, width, height)
+	
 	# Step 5: Serialize to GeoJSON
 	var t4: int = Time.get_ticks_msec()
 	var geojson: Dictionary = GeoJsonSerializer.serialize(
@@ -75,7 +74,9 @@ static func run(params: Dictionary) -> Dictionary:
 		coord_mode,
 		include_countries,
 		include_land,
-		include_capitals
+		include_capitals,
+		lake_merged,
+		include_lakes
 	)
 	
 	# Step 6: Save to file
@@ -98,8 +99,52 @@ static func run(params: Dictionary) -> Dictionary:
 		"output_path": output_path,
 		"countries": countries_res.get("countries", []),
 		"land_polygons": land_merged,
+		"lake_polygons": lake_merged,
 		"voronoi": voronoi,
 		"heightmap": heightmap,
 		"geojson": geojson,
 		"params": params
 	}
+
+## Identify and dissolve inland water cells (lakes and enclosed seas)
+static func _extract_inland_lakes(voronoi: Dictionary, heightmap: Dictionary, width: float, height: float) -> Array[PackedVector2Array]:
+	var is_land: Array[bool] = heightmap["is_land"]
+	var cell_polys: Array = voronoi["cell_polygons"]
+	var cell_neighbors: Array = voronoi["cell_neighbors"]
+	
+	var visited: Dictionary = {}
+	var lake_components: Array = []
+	for i in range(is_land.size()):
+		if is_land[i] or (i in visited):
+			continue
+		var comp: Array[int] = []
+		var q: Array[int] = [i]
+		visited[i] = true
+		while not q.is_empty():
+			var curr: int = q.pop_front()
+			comp.append(curr)
+			for nb in cell_neighbors[curr]:
+				if not is_land[nb] and not (nb in visited):
+					visited[nb] = true
+					q.append(nb)
+		lake_components.append(comp)
+		
+	var lake_polys: Array[PackedVector2Array] = []
+	for comp in lake_components:
+		var touches_border: bool = false
+		for c in comp:
+			var poly: PackedVector2Array = cell_polys[c]
+			for pt in poly:
+				if pt.x <= 0.5 or pt.x >= width - 0.5 or pt.y <= 0.5 or pt.y >= height - 0.5:
+					touches_border = true
+					break
+			if touches_border:
+				break
+		if not touches_border:
+			var lake_cell_polys: Array = []
+			for c in comp:
+				lake_cell_polys.append(cell_polys[c])
+			var merged: Array[PackedVector2Array] = CountryBuilder.union_polygons(lake_cell_polys)
+			lake_polys.append_array(merged)
+			
+	return lake_polys

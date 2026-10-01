@@ -31,7 +31,6 @@ static func generate(
 	
 	var center_x: float = width * 0.5
 	var center_y: float = height * 0.5
-	var max_dist: float = sqrt(center_x * center_x + center_y * center_y)
 	
 	for i in range(cell_count):
 		var p: Vector2 = centers[i]

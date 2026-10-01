@@ -2,55 +2,46 @@
 class_name CountryBuilder
 extends RefCounted
 
-const VoronoiBuilder = preload("voronoi_builder.gd")
-const NameGenerator = preload("name_generator.gd")
-
 ## Union an array of polygons into a minimal set of merged boundary polygons (Clipper C++)
 static func union_polygons(polys: Array) -> Array[PackedVector2Array]:
 	if polys.is_empty():
 		return []
-	var current: Array[PackedVector2Array] = []
+	var pool: Array[PackedVector2Array] = []
 	for p in polys:
 		if p is PackedVector2Array and p.size() >= 3:
-			current.append(p)
+			pool.append(p)
 			
-	if current.is_empty():
+	if pool.is_empty():
 		return []
 		
-	while current.size() > 1:
-		var next_pass: Array[PackedVector2Array] = []
-		var i: int = 0
-		while i < current.size():
-			if i + 1 < current.size():
-				var merged: Array[PackedVector2Array] = Geometry2D.merge_polygons(current[i], current[i + 1])
-				for m in merged:
-					if m.size() >= 3 and absf(VoronoiBuilder.compute_polygon_area(m)) > 2.0:
-						next_pass.append(m)
-				i += 2
-			else:
-				next_pass.append(current[i])
-				i += 1
-				
-		if next_pass.size() == current.size():
-			# All-pairs reduction for remaining components
-			var reduced: Array[PackedVector2Array] = [next_pass[0]]
-			for k in range(1, next_pass.size()):
-				var target: PackedVector2Array = next_pass[k]
-				var merged_any: bool = false
-				for r_idx in range(reduced.size()):
-					var m: Array[PackedVector2Array] = Geometry2D.merge_polygons(reduced[r_idx], target)
-					if m.size() == 1 and m[0].size() >= 3:
-						reduced[r_idx] = m[0]
-						merged_any = true
-						break
-				if not merged_any:
-					reduced.append(target)
-			current = reduced
-			break
-		else:
-			current = next_pass
-			
-	return current
+	var changed: bool = true
+	while changed and pool.size() > 1:
+		changed = false
+		var new_pool: Array[PackedVector2Array] = []
+		var merged_indices: Dictionary = {}
+		
+		for i in range(pool.size()):
+			if i in merged_indices:
+				continue
+			var curr: PackedVector2Array = pool[i]
+			for j in range(i + 1, pool.size()):
+				if j in merged_indices:
+					continue
+				var m: Array[PackedVector2Array] = Geometry2D.merge_polygons(curr, pool[j])
+				var outers: Array[PackedVector2Array] = []
+				for p in m:
+					if p.size() >= 3 and absf(VoronoiBuilder.compute_polygon_area(p)) > 2.0:
+						if not Geometry2D.is_polygon_clockwise(p):
+							outers.append(p)
+				if outers.size() == 1:
+					curr = outers[0]
+					merged_indices[j] = true
+					changed = true
+			if absf(VoronoiBuilder.compute_polygon_area(curr)) > 2.0:
+				new_pool.append(curr)
+		pool = new_pool
+		
+	return pool
 
 ## Generate distinct aesthetic colors using golden ratio HSV
 static func generate_country_colors(count: int, rng: RandomNumberGenerator) -> Array[Color]:
@@ -125,7 +116,7 @@ static func generate(
 	cell_country.resize(cell_count)
 	cell_country.fill(-1)
 	
-	var cell_dist: PackedFloat32Array = PackedFloat32Array()
+	var cell_dist: Array[float] = []
 	cell_dist.resize(cell_count)
 	cell_dist.fill(1e9)
 	
@@ -146,7 +137,7 @@ static func generate(
 		var curr_cell: int = current_item[1]
 		var curr_country: int = current_item[2]
 		
-		if curr_cost > cell_dist[curr_cell]:
+		if curr_cost > cell_dist[curr_cell] + 1e-4:
 			continue
 			
 		for nb in cell_neighbors[curr_cell]:
